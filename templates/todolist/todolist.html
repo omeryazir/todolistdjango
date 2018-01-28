@@ -1,0 +1,133 @@
+{% extends "todotask/base.html" %}
+
+{% load static %}
+
+{% block js %}
+<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+<script src="{% static 'js/lists.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<section class="header">
+    <div class="row">
+        <div class="three columns value-prop"></div>
+        <div class="six columns">
+            <form action="{% url 'lists:add_todo' todolist.id %}" method=post>
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+  </div>
+</section>
+
+
+<section class="content">
+    <h1>To Do List Name > {{todolist.title}}</h1>
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="pull-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success btn-filter" data-target="All">All({{todolist.count}})
+                        </button>
+                        <button type="button" class="btn btn-warning btn-filter" data-target="False">Uncomplete({{todolist.count_open}})
+                        </button>
+                        <button type="button" class="btn btn-danger btn-filter" data-target="True">Complete({{todolist.count_finished}})
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="table table-filter">
+                        <tbody>
+                        <!--All todoobjects-->
+                        {% for todo in todolist.todos.all %}
+                        <tr data-status="All" class="selected">
+                            <td>
+                                <div class="ckbox">
+                                    <input type="checkbox" id="checkbox1" checked>
+                                    <label for="checkbox1"></label>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="media-meta pull-right">{{ todo.create_date }}</span>
+                            </td>
+                            <td>
+                                <div class="media">
+                                    <div class="media-body">
+                                        <span class="media-meta pull-right">{{ todo.deadline }}</span>
+                                        <h4 class="title">
+                                            {{ todo.title }}
+                                        </h4>
+                                        <p class="summary">{{ todo.description }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <!--Uncomplete todoobjects-->
+                        {% for todo in todolist.todos.all %}
+                        {% if not todo.is_finished %}
+                        <tr data-status="{{todo.is_finished}}" class="selected">
+                            <td>
+                                <div class="ckbox">
+                                    <input type="checkbox" id="checkbox{{ todo.id }}" data-todo-id="{{ todo.id }}">
+                                    <label for="checkbox{{ todo.id }}"></label>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="media-meta pull-right">{{ todo.create_date }}</span>
+                            </td>
+                            <td>
+                                <div class="media">
+                                    <div class="media-body">
+                                        <span class="media-meta pull-right">{{ todo.deadline }}</span>
+                                        <h4 class="title">
+                                            {{ todo.title }}
+                                        </h4>
+                                        <p class="summary">{{ todo.description }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                        <!--Complete todoobjects-->
+                        {% for todo in todolist.todos.all %}
+                        {% if todo.is_finished %}
+                        <tr data-status="{{todo.is_finished}}" class="selected">
+                            <td>
+                                <div class="ckbox">
+                                    <input type="checkbox" id="checkbox{{ todo.id }}" data-todo-id="{{ todo.id }}"
+                                           checked="checked">
+                                    <label for="checkbox{{ todo.id }}"></label>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="media-meta pull-right">{{ todo.create_date }}</span>
+                            </td>
+                            <td>
+                                <div class="media">
+                                    <div class="media-body">
+                                        <span class="media-meta pull-right">{{ todo.deadline }}</span>
+                                        <h4 class="title">
+                                            {{ todo.title }}
+                                        </h4>
+                                        <p class="summary">{{ todo.description }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
